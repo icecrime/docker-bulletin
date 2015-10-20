@@ -1,2 +1,4 @@
-# docker-bulletin
-The Docker Open Source journal
+Docker bulletin
+---------------
+
+Generated using [vossibility-bulletin](https://github.com/icecrime/vossibility-bulletin).

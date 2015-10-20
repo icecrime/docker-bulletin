@@ -1,0 +1,54 @@
+{
+  "query": {
+    "filtered": {
+      "query": {
+        "query_string": {
+          "query": "_type:pull_request AND merged:true AND created_at:[now-7d TO *]"
+        }
+      }
+    }
+  },
+  "aggs": {
+    "closed_by": {
+      "terms": {
+        "field": "merged_by.login",
+        "size": 3,
+         "order": {
+           "_count": "desc"
+         }
+      }
+    },
+    "is_maintainer": {
+      "filters": {
+        "filters": {
+          "maintainer": {
+            "query": {
+              "query_string": {
+                "query": "author.is_maintainer:true"
+              }
+            }
+          },
+          "non_maintainer": {
+            "query": {
+              "query_string": {
+                "query": "author.is_maintainer:false"
+              }
+            }
+          }
+        }
+      },
+      "aggs": {
+        "logins": {
+          "terms": {
+            "field": "author.login",
+            "size": 5,
+            "order": {
+              "_count": "desc"
+            }
+          }
+        }
+      }
+    }
+  },
+  "size": 0
+}

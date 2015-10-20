@@ -1,0 +1,21 @@
+{
+  "query": {
+    "filtered": {
+      "query": {
+        "query_string": {
+          "analyze_wildcard": true,
+          "query": "_type:pull_request AND action:closed AND merged:false AND sender.is_maintainer:true AND _timestamp:[now-7d TO *]"
+        }
+      }
+    }
+  },
+  "size": 0,
+  "aggs": {
+    "login": {
+      "terms": {
+        "field": "sender.login",
+        "size": 1
+      }
+    }
+  }
+}

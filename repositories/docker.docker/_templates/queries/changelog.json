@@ -1,0 +1,27 @@
+{
+  "query": {
+    "filtered": {
+      "query": {
+        "query_string": {
+          "analyze_wildcard": true,
+          "query": "_type:pull_request AND closed_at:[now-7d TO now] AND labels:\"impact/changelog\""
+        }
+      }
+    }
+  },
+  "size": 30,
+  "fields": [
+    "created_at",
+    "number",
+    "closed_at",
+    "author.login",
+    "title",
+    "changed_files",
+    "additions",
+    "deletions"
+  ],
+  "sort": {
+    "closed_at": "asc"
+  }
+}
+

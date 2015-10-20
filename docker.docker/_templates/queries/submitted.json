@@ -1,0 +1,40 @@
+{
+  "query": {
+    "filtered": {
+      "query": {
+        "query_string": {
+          "analyze_wildcard": true,
+          "query": "_type:pull_request AND created_at:[now-7d TO *]"
+        }
+      }
+    }
+  },
+  "aggs": {
+    "state": {
+      "filters": {
+        "filters": {
+          "closed": {
+            "query": {
+              "query_string": {
+                "query": "state:closed"
+              }
+            }
+          },
+          "merged": {
+            "query": {
+              "query_string": {
+                "query": "merged:true"
+              }
+            }
+          }
+        }
+      }
+    },
+    "unique_authors": {
+      "cardinality": {
+        "field": "author.login"
+      }
+    }
+  },
+  "size": 0
+}

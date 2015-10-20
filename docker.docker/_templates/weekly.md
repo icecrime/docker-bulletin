@@ -1,6 +1,6 @@
 {{/*
 */}}{{ define "closed_at" }}{{ .closed_at | one | formatDate }}{{ end }}{{/*
-*/}}{{ define "item_lnk"  }}{{ with $n := one .number }}{{ printf "[#%.0f](https://github.com/docker/docker/issue/%.0f)" $n $n }}{{ end }}{{ end }}{{/*
+*/}}{{ define "item_lnk"  }}{{ with $n := one .number }}{{ printf "[#%.0f](https://github.com/docker/docker/issues/%.0f)" $n $n }}{{ end }}{{ end }}{{/*
 */}}{{ define "fmt_login" }}{{ printf "[%s](https://github.com/%s)" . . }}{{ end }}{{/*
 */}}{{ define "login_lnk" }}{{ with $l := index . "author.login" | one }}{{ template "fmt_login" . }}{{ end }}{{ end }}{{/*
 
@@ -10,7 +10,7 @@
 */}}{{ with search "engine-snapshot" "submitted.json" }}
   - **{{ .Hits.Total }} pull requests** were submitted by **{{ .Aggregations.unique_authors.value }} unique contributors**.{{ end }}{{/*
 */}}{{ with search "engine-snapshot" "closed.json" }}
-  - **{{ .Hits.Total }}** pull requests were processed ({{ .Aggregations.is_merged.buckets.merged.doc_count }} of those were merged).{{ end }}
+  - **{{ .Hits.Total }} pull requests** were processed ({{ .Aggregations.is_merged.buckets.merged.doc_count }} of those were merged).{{ end }}
 {{/*
 
 */}}

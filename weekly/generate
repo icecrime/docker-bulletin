@@ -1,0 +1,46 @@
+#!/bin/sh
+set -ex
+
+TODAY=$(date -I)
+BRANCH="autogenerate_$TODAY"
+REMOTE="icecrime"
+
+commit () {
+    git checkout -B $BRANCH
+    git add /data/repositories/
+    git commit -sm "Generate $TODAY reports"
+    git push $REMOTE $BRANCH
+}
+
+merge_to_master () {
+    local OUTPUT=$(
+        curl -u $GIT_BASIC_AUTH -H "Content-Type: application/json" \
+             -d "{ \"title\": \"Automatic $TODAY reports\", \"head\": \"$BRANCH\", \"base\": \"master\" }" \
+             -XPOST https://api.github.com/repos/icecrime/docker-bulletin/pulls
+    )
+    local PULL_REQUEST=$( echo $OUTPUT | jq .number )
+    curl -u $GIT_BASIC_AUTH -H "Content-Type: application/json" -d "{}" \
+         -XPUT https://api.github.com/repos/icecrime/docker-bulletin/pulls/$PULL_REQUEST/merge
+}
+
+generate () {
+    ( cd _templates && /src/bin/vossibility-bulletin --source "$ELASTICSEARCH" generate weekly.md )
+}
+
+cleanup () {
+    git checkout master
+    git push $REMOTE --delete $BRANCH
+    git branch -D $BRANCH
+    git fetch $REMOTE
+    git reset --hard $REMOTE/master
+}
+
+for dir in /data/repositories/*; do
+    if [ -d $dir ]; then
+        ( cd $dir && generate ) > $dir/$TODAY.md
+    fi
+done
+
+commit
+merge_to_master
+cleanup

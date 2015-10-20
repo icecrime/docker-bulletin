@@ -1,0 +1,34 @@
+{
+  "query": {
+    "filtered": {
+      "query": {
+        "query_string": {
+          "query": "_type:pull_request AND state:closed AND created_at:[now-7d TO *]"
+        }
+      }
+    }
+  },
+  "aggs": {
+    "is_merged": {
+      "filters": {
+        "filters": {
+          "merged": {
+            "query": {
+              "query_string": {
+                "query": "merged:true"
+              }
+            }
+          },
+          "not_merged": {
+            "query": {
+              "query_string": {
+                "query": "merged:false"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "size": 0
+}

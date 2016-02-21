@@ -1,0 +1,20 @@
+#!/bin/sh
+set -ex
+
+commit () {
+    git status
+    #git add *
+    #git commit -sm "Generate reports"
+    #git push origin
+}
+
+generate () {
+    ( cd _templates && /src/bin/vossibility-bulletin --source "$ELASTICSEARCH" generate weekly.md )
+}
+
+for dir in /data/repositories/*; do
+    if [ -d $dir ]; then
+        ( cd $dir && generate ) > $dir/$(date "+%Y-%m-%d").md
+    fi
+done
+

@@ -1,11 +1,24 @@
 #!/bin/sh
 set -ex
 
+TODAY=$(date -I)
+BRANCH="autogenerate_$TODAY"
+
 commit () {
-    git status
-    #git add *
-    #git commit -sm "Generate reports"
-    #git push origin
+    git checkout -B $BRANCH
+    git add /data/repositories/
+    git commit -sm "Generate $TODAY reports"
+    git push icecrime $BRANCH
+}
+
+merge_to_master () {
+    local OUTPUT=$(
+        curl -u $GIT_BASIC_AUTH -H "Content-Type: application/json" \
+             -d "{ \"title\": \"Automatic $TODAY reports\", \"head\": \"$BRANCH\", \"base\": \"master\" }" \
+             https://api.github.com/repos/icecrime/docker-bulletin/pulls
+    )
+    local PULL_REQUEST=$( echo $OUTPUT | jq .number )
+    curl -u $GIT_BASIC_AUTH -XPUT https://api.github.com/repos/icecrime/docker-bulletin/pulls/$PULL_REQUEST/merge
 }
 
 generate () {
@@ -14,7 +27,9 @@ generate () {
 
 for dir in /data/repositories/*; do
     if [ -d $dir ]; then
-        ( cd $dir && generate ) > $dir/$(date "+%Y-%m-%d").md
+        ( cd $dir && generate ) > $dir/$TODAY.md
     fi
 done
 
+commit
+merge_to_master

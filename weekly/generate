@@ -1,9 +1,9 @@
 #!/bin/sh
 set -ex
 
+TODAY=$(date -I)
 BRANCH="autogenerate_$TODAY"
 REMOTE="icecrime"
-TODAY=$(date -I)
 
 commit () {
     git checkout -B $BRANCH
